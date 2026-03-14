@@ -9,6 +9,7 @@
     "start": "npx serve out"
   },
   "dependencies": {
+    "@formspree/react": "^3.0.0",
     "dist": "^0.1.2",
     "framer-motion": "^11.0.0",
     "lucide-react": "^0.400.0",
