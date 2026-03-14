@@ -4,6 +4,8 @@ import { Instagram } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
+const BASE = process.env.NODE_ENV === "production" ? "/VibeandVelocity" : "";
+
 export default function Navbar() {
   return (
     <nav
@@ -18,7 +20,7 @@ export default function Navbar() {
       <div className="w-full max-w-[1400px] mx-auto flex items-center justify-between">
         <Link href="/" className="flex items-center gap-3 cursor-pointer">
           <Image
-            src="/VibeandVelocity/logo.png"
+            src={`${BASE}/logo.png`}
             alt="Vibe & Velocity Logo"
             width={40}
             height={40}

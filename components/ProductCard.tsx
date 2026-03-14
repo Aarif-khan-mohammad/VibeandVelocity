@@ -37,7 +37,7 @@ export default function ProductCard({ product }: { product: Product }) {
       )}
 
       {/* Image */}
-      <div className="relative w-full h-52 bg-white/5">
+      <div className="relative w-full h-36 sm:h-52 bg-white/5">
         <Image
           src={product.image}
           alt={product.name}
@@ -51,7 +51,7 @@ export default function ProductCard({ product }: { product: Product }) {
       </div>
 
       {/* Info */}
-      <div className="flex flex-col flex-1 p-4 gap-2">
+      <div className="flex flex-col flex-1 p-2 sm:p-4 gap-1 sm:gap-2">
         <span
           className="text-xs font-semibold px-2 py-0.5 rounded-full self-start"
           style={{
@@ -63,11 +63,11 @@ export default function ProductCard({ product }: { product: Product }) {
           {product.category}
         </span>
 
-        <p className="text-white text-sm font-medium leading-snug line-clamp-2">{product.name}</p>
+        <p className="text-white text-xs sm:text-sm font-medium leading-snug line-clamp-2">{product.name}</p>
 
-        <div className="flex items-center gap-2 mt-auto pt-1">
-          <span className="text-white font-bold text-lg">₹{product.price}</span>
-          <span className="text-gray-400 text-sm line-through">₹{product.mrp}</span>
+        <div className="flex items-center gap-1 sm:gap-2 mt-auto pt-1">
+          <span className="text-white font-bold text-sm sm:text-lg">₹{product.price}</span>
+          <span className="text-gray-400 text-xs line-through">₹{product.mrp}</span>
         </div>
 
         <a

@@ -82,12 +82,8 @@ export default function Home() {
             No products found. Try a different search or category.
           </motion.p>
         ) : (
-          <div
-            className="grid gap-6"
-            style={{
-              gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
-            }}
-          >
+          <div className="grid gap-3 sm:gap-6 grid-cols-2 sm:grid-cols-[repeat(auto-fill,minmax(240px,1fr))]">
+
             {filtered.map((product) => (
               <motion.div
                 key={product.name + product.price}

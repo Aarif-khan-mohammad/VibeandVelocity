@@ -122,9 +122,9 @@ export default function SearchFilter({
         </div>
       </div>
 
-      {/* Category Tabs */}
+      {/* Category Tabs — desktop */}
       <div
-        className="flex flex-wrap justify-center gap-2 p-2 rounded-full"
+        className="hidden sm:flex flex-wrap justify-center gap-2 p-2 rounded-full"
         style={{ background: "rgba(20,20,40,0.6)" }}
       >
         {["All", ...categories].map((cat) => {
@@ -142,6 +142,29 @@ export default function SearchFilter({
             </motion.button>
           );
         })}
+      </div>
+
+      {/* Category Dropdown — mobile */}
+      <div className="sm:hidden w-full" style={{ maxWidth: 600 }}>
+        <select
+          value={activeCategory}
+          onChange={(e) => setActiveCategory(e.target.value)}
+          className="w-full px-4 py-3 rounded-full text-white text-sm font-semibold appearance-none cursor-pointer transition-all duration-300"
+          style={{
+            background: "rgba(20,20,40,0.9)",
+            border: "1px solid rgba(138,43,226,0.4)",
+            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238a2be2' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E")`,
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "right 16px center",
+            paddingRight: "40px",
+          }}
+        >
+          {["All", ...categories].map((cat) => (
+            <option key={cat} value={cat} style={{ background: "#1a0a2e" }}>
+              {cat}
+            </option>
+          ))}
+        </select>
       </div>
     </div>
   );
