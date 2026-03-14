@@ -12,6 +12,7 @@ out/
 .env*.local
 dist
 build
+
 # misc
 .DS_Store
 *.pem
