@@ -18,7 +18,7 @@ export default function Navbar() {
       <div className="w-full max-w-[1400px] mx-auto flex items-center justify-between">
         <Link href="/" className="flex items-center gap-3 cursor-pointer">
           <Image
-            src="/logo.png"
+            src="${basePath}/logo.png"
             alt="Vibe & Velocity Logo"
             width={40}
             height={40}
