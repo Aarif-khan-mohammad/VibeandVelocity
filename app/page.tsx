@@ -18,25 +18,97 @@ const products = (productsData as unknown) as {
 
 const categories = [...new Set(products.map((p) => p.category))];
 
-const MOBILE_PER_PAGE = 10; // 5 rows × 2 cols
-const DESKTOP_PER_PAGE = 12;
+function getPerPage() {
+  if (typeof window === "undefined") return 12;
+  return window.innerWidth < 640 ? 8 : 12;
+}
+
+function Pagination({
+  page,
+  totalPages,
+  onChange,
+}: {
+  page: number;
+  totalPages: number;
+  onChange: (p: number) => void;
+}) {
+  if (totalPages <= 1) return null;
+
+  const go = (p: number) => {
+    onChange(p);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // Show max 5 page numbers with ellipsis
+  const getPages = () => {
+    if (totalPages <= 5) return Array.from({ length: totalPages }, (_, i) => i + 1);
+    if (page <= 3) return [1, 2, 3, 4, "...", totalPages];
+    if (page >= totalPages - 2) return [1, "...", totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+    return [1, "...", page - 1, page, page + 1, "...", totalPages];
+  };
+
+  return (
+    <div className="flex items-center justify-center gap-2 mt-8 flex-wrap">
+      {/* Prev */}
+      <button
+        onClick={() => go(Math.max(1, page - 1))}
+        disabled={page === 1}
+        className="px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 disabled:opacity-30"
+        style={{ background: "rgba(20,20,40,0.8)", border: "1px solid rgba(138,43,226,0.4)", color: "white" }}
+      >
+        ← Prev
+      </button>
+
+      {/* Page numbers */}
+      {getPages().map((p, i) =>
+        p === "..." ? (
+          <span key={`ellipsis-${i}`} className="text-gray-500 text-sm px-1">…</span>
+        ) : (
+          <button
+            key={p}
+            onClick={() => go(p as number)}
+            className="w-9 h-9 rounded-full text-xs font-bold transition-all duration-300"
+            style={{
+              background: page === p ? "linear-gradient(135deg, #8a2be2, #00d4ff)" : "rgba(20,20,40,0.8)",
+              border: "1px solid rgba(138,43,226,0.4)",
+              color: "white",
+              boxShadow: page === p ? "0 0 12px rgba(138,43,226,0.5)" : "none",
+            }}
+          >
+            {p}
+          </button>
+        )
+      )}
+
+      {/* Next */}
+      <button
+        onClick={() => go(Math.min(totalPages, page + 1))}
+        disabled={page === totalPages}
+        className="px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 disabled:opacity-30"
+        style={{ background: "rgba(20,20,40,0.8)", border: "1px solid rgba(138,43,226,0.4)", color: "white" }}
+      >
+        Next →
+      </button>
+    </div>
+  );
+}
 
 export default function Home() {
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
   const [sort, setSort] = useState<SortOption>("default");
   const [page, setPage] = useState(1);
-  const [isMobile, setIsMobile] = useState(false);
+  const [perPage, setPerPage] = useState(12);
 
   useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 640);
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
+    const update = () => setPerPage(getPerPage());
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
   }, []);
 
-  // Reset to page 1 whenever filters change
-  useEffect(() => { setPage(1); }, [search, activeCategory, sort]);
+  // Reset to page 1 on filter/sort change
+  useEffect(() => { setPage(1); }, [search, activeCategory, sort, perPage]);
 
   const filtered = useMemo(() => {
     let list = products.filter((p) => {
@@ -50,13 +122,11 @@ export default function Home() {
     return list;
   }, [search, activeCategory, sort]);
 
-  const perPage = isMobile ? MOBILE_PER_PAGE : DESKTOP_PER_PAGE;
   const totalPages = Math.ceil(filtered.length / perPage);
-  const paginated = isMobile ? filtered.slice((page - 1) * perPage, page * perPage) : filtered;
+  const paginated = filtered.slice((page - 1) * perPage, page * perPage);
 
   return (
     <>
-      {/* Background */}
       <div className="fixed inset-0 -z-10" style={{ background: "#0a0a1e" }}>
         <div
           className="absolute inset-0"
@@ -70,7 +140,6 @@ export default function Home() {
       <Navbar />
 
       <main className="mx-auto px-4 pb-16" style={{ maxWidth: 1400, paddingTop: 100 }}>
-        {/* Search + Filter */}
         <div className="mb-10">
           <SearchFilter
             search={search}
@@ -83,7 +152,6 @@ export default function Home() {
           />
         </div>
 
-        {/* Product Grid */}
         {filtered.length === 0 ? (
           <motion.p
             initial={{ opacity: 0 }}
@@ -94,73 +162,25 @@ export default function Home() {
           </motion.p>
         ) : (
           <>
-            <div
-              className="grid gap-3 sm:gap-6 grid-cols-2 sm:grid-cols-[repeat(auto-fill,minmax(240px,1fr))]"
-              style={{ alignItems: "stretch" }}
-            >
+            <div className="grid gap-3 sm:gap-6 grid-cols-2 sm:grid-cols-[repeat(auto-fill,minmax(240px,1fr))]">
               {paginated.map((product) => (
                 <motion.div
                   key={product.name + product.price}
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.2 }}
-                  style={{ display: "flex" }}
                 >
-                  <div style={{ width: "100%" }}>
-                    <ProductCard product={product} />
-                  </div>
+                  <ProductCard product={product} />
                 </motion.div>
               ))}
             </div>
 
-            {/* Pagination — mobile only */}
-            {isMobile && totalPages > 1 && (
-              <div className="flex items-center justify-center gap-2 mt-8">
-                <button
-                  onClick={() => { setPage((p) => Math.max(1, p - 1)); window.scrollTo({ top: 0, behavior: "smooth" }); }}
-                  disabled={page === 1}
-                  className="px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 disabled:opacity-30"
-                  style={{
-                    background: "rgba(20,20,40,0.8)",
-                    border: "1px solid rgba(138,43,226,0.4)",
-                    color: "white",
-                  }}
-                >
-                  ← Prev
-                </button>
+            <Pagination page={page} totalPages={totalPages} onChange={setPage} />
 
-                <div className="flex items-center gap-1">
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                    <button
-                      key={p}
-                      onClick={() => { setPage(p); window.scrollTo({ top: 0, behavior: "smooth" }); }}
-                      className="w-8 h-8 rounded-full text-xs font-bold transition-all duration-300"
-                      style={{
-                        background: page === p ? "linear-gradient(135deg, #8a2be2, #00d4ff)" : "rgba(20,20,40,0.8)",
-                        border: "1px solid rgba(138,43,226,0.4)",
-                        color: "white",
-                        boxShadow: page === p ? "0 0 12px rgba(138,43,226,0.5)" : "none",
-                      }}
-                    >
-                      {p}
-                    </button>
-                  ))}
-                </div>
-
-                <button
-                  onClick={() => { setPage((p) => Math.min(totalPages, p + 1)); window.scrollTo({ top: 0, behavior: "smooth" }); }}
-                  disabled={page === totalPages}
-                  className="px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 disabled:opacity-30"
-                  style={{
-                    background: "rgba(20,20,40,0.8)",
-                    border: "1px solid rgba(138,43,226,0.4)",
-                    color: "white",
-                  }}
-                >
-                  Next →
-                </button>
-              </div>
-            )}
+            {/* Page info */}
+            <p className="text-center text-gray-500 text-xs mt-3">
+              Showing {(page - 1) * perPage + 1}–{Math.min(page * perPage, filtered.length)} of {filtered.length} products
+            </p>
           </>
         )}
       </main>
