@@ -7,8 +7,8 @@ export const metadata: Metadata = {
   title: "Vibe & Velocity — Budget Deals ₹500–₹1000",
   description: "Discover the best budget products under ₹1000. Curated deals on mobiles, fashion, electronics & more.",
   icons: {
-    icon: "${basePath}/logo.png",
-    apple: "${basePath}/logo.png",
+    icon: "/VibeandVelocity/logo.png",
+    apple: "/VibeandVelocity/logo.png",
   },
 };
 
