@@ -24,57 +24,70 @@ export default function ProductCard({ product }: { product: Product }) {
       style={{
         background: "rgba(20,20,40,0.8)",
         border: "1px solid rgba(138,43,226,0.3)",
+        height: "100%",
       }}
     >
       {/* Discount Badge */}
       {discount > 0 && (
         <span
-          className="absolute top-3 left-3 z-10 text-white text-xs font-bold px-2 py-1 rounded-full"
+          className="absolute top-2 left-2 z-10 text-white text-xs font-bold px-2 py-0.5 rounded-full"
           style={{ background: "linear-gradient(135deg, #ff6a00, #ee0979)" }}
         >
           -{discount}%
         </span>
       )}
 
-      {/* Image */}
-      <div className="relative w-full h-36 sm:h-52 bg-white/5">
+      {/* Image — fixed height */}
+      <div className="relative w-full flex-shrink-0 bg-white/5" style={{ height: 140 }}>
         <Image
           src={product.image}
           alt={product.name}
           fill
-          className="object-contain p-3"
-          sizes="(max-width: 768px) 100vw, 33vw"
+          className="object-contain p-2"
+          sizes="(max-width: 640px) 50vw, 25vw"
           onError={(e) => {
-            (e.target as HTMLImageElement).src = "https://placehold.co/400x300/1a0a2e/8a2be2?text=Product";
+            (e.target as HTMLImageElement).src =
+              "https://placehold.co/400x300/1a0a2e/8a2be2?text=Product";
           }}
         />
       </div>
 
-      {/* Info */}
-      <div className="flex flex-col flex-1 p-2 sm:p-4 gap-1 sm:gap-2">
-        <span
-          className="text-xs font-semibold px-2 py-0.5 rounded-full self-start"
-          style={{
-            background: "rgba(138,43,226,0.2)",
-            color: "#00d4ff",
-            border: "1px solid rgba(0,212,255,0.3)",
-          }}
-        >
-          {product.category}
-        </span>
+      {/* Info — fixed layout, no flex-1 growth on inner items */}
+      <div className="flex flex-col p-2 sm:p-3 gap-1.5" style={{ flex: 1 }}>
+        {/* Category tag — fixed height */}
+        <div style={{ height: 22 }}>
+          <span
+            className="text-xs font-semibold px-2 py-0.5 rounded-full"
+            style={{
+              background: "rgba(138,43,226,0.2)",
+              color: "#00d4ff",
+              border: "1px solid rgba(0,212,255,0.3)",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {product.category}
+          </span>
+        </div>
 
-        <p className="text-white text-xs sm:text-sm font-medium leading-snug line-clamp-2">{product.name}</p>
+        {/* Name — fixed 2-line height */}
+        <div style={{ height: 36 }}>
+          <p className="text-white text-xs font-medium leading-snug line-clamp-2">
+            {product.name}
+          </p>
+        </div>
 
-        <div className="flex items-center gap-1 sm:gap-2 mt-auto pt-1">
-          <span className="text-white font-bold text-sm sm:text-lg">₹{product.price}</span>
+        {/* Price row — fixed height */}
+        <div className="flex items-center gap-1.5" style={{ height: 28 }}>
+          <span className="text-white font-bold text-sm sm:text-base">₹{product.price}</span>
           <span className="text-gray-400 text-xs line-through">₹{product.mrp}</span>
         </div>
 
+        {/* Buy Now — always at bottom */}
         <a
           href={product.link}
           target="_blank"
           rel="noopener noreferrer sponsored"
-          className="buy-btn mt-2 text-center text-white text-sm font-bold py-2.5 rounded-xl transition-all duration-300"
+          className="buy-btn text-center text-white text-xs sm:text-sm font-bold py-2 rounded-xl transition-all duration-300 mt-auto"
           style={{ background: "linear-gradient(135deg, #8a2be2, #00d4ff)" }}
         >
           Buy Now
