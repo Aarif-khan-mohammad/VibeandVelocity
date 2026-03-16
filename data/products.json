@@ -934,5 +934,45 @@
     "category": "Women Fashion",
     "image": "https://i.ibb.co/27rTpgb0/Screenshot-2026-03-14-115602.png",
     "link": "https://fkrt.co/YCzDda"
+  },
+  {
+    "product_name": "T-Shirt for Men Zip Neck Texture Self Design Cotton Blend Mens Tshirts",
+    "mrp": 1499,
+    "current_price": 298,
+    "type": "Men Fashion",
+    "image_link": "https://i.ibb.co/QFqP331R/Screenshot-2026-03-16-082641.png",
+    "product_link": "https://amzn.to/4lwhliw"
+  },
+  {
+    "product_name": "JVX Men Sweatshirts | Sweatshirts for Men | Unisex Hoodie",
+    "mrp": 2999,
+    "current_price": 597,
+    "type": "Men Fashion",
+    "image_link": "https://i.ibb.co/DhCpW7y/Screenshot-2026-03-16-082658.png",
+    "product_link": "https://amzn.to/3Pco5WD"
+  },
+  {
+    "product_name": "Majestic Man Men's Cotton Regular Fit Casual Mandarin Collar Printed Long Kurta",
+    "mrp": 2499,
+    "current_price": 748,
+    "type": "Men Fashion",
+    "image_link": "https://i.ibb.co/Y4GzxhSr/Screenshot-2026-03-16-082725.png",
+    "product_link": "https://amzn.to/4bdpeWF"
+  },
+  {
+    "product_name": "Xech Alarm Clock with Speaker for Heavy Sleepers USB Powered Bedside Clock",
+    "mrp": 3499,
+    "current_price": 997,
+    "type": "Electronics",
+    "image_link": "https://i.ibb.co/CsKDb5c2/Screenshot-2026-03-16-082736.png",
+    "product_link": "https://amzn.to/4dkMMdp"
+  },
+  {
+    "product_name": "Campus Men's Starship Sneakers",
+    "mrp": 3099,
+    "current_price": 1368,
+    "type": "Men Fashion",
+    "image_link": "https://i.ibb.co/LDp507qH/Screenshot-2026-03-16-082753.png",
+    "product_link": "https://amzn.to/4s6WF2Y"
   }
 ]
