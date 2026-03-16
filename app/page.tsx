@@ -98,7 +98,7 @@ export default function Home() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [sort, setSort] = useState<SortOption>("default");
   const [page, setPage] = useState(1);
-  const [perPage, setPerPage] = useState(12);
+  const [perPage, setPerPage] = useState(() => 12);
 
   useEffect(() => {
     const update = () => setPerPage(getPerPage());
@@ -113,7 +113,7 @@ export default function Home() {
   const filtered = useMemo(() => {
     let list = products.filter((p) => {
       const matchCat = activeCategory === "All" || p.category === activeCategory;
-      const matchSearch = p.name.toLowerCase().includes(search.toLowerCase());
+      const matchSearch = (p.name ?? "").toLowerCase().includes(search.toLowerCase());
       return matchCat && matchSearch;
     });
     if (sort === "low-high") list = [...list].sort((a, b) => a.price - b.price);
