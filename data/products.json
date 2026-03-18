@@ -990,5 +990,45 @@
     "type": "Kitchen Accessories",
     "image_link": "https://i.ibb.co/mn9rg5z/Screenshot-2026-03-17-091522.png",
     "product_link": "https://amzn.to/4sguRcE"
+  },
+  {
+    "name": "Printed A-Line Dress with Belt",
+    "mrp": 799,
+    "current_price": 200,
+    "type": "Fashion",
+    "image_link": "https://i.ibb.co/8gXtbRHw/Screenshot-2026-03-18-082411.png",
+    "product_link": "https://ajiio.co/nYKuJG"
+  },
+  {
+    "name": "Women Navy Blue & Red Colourblocked Hooded Sweatshirt",
+    "mrp": 1199,
+    "current_price": 203,
+    "type": "Fashion",
+    "image_link": "https://i.ibb.co/BKzYR7s3/Screenshot-2026-03-18-082430.png",
+    "product_link": "https://myntr.in/akEzPl"
+  },
+  {
+    "name": "Embroidered A-Line Kurta With Trouser & Dupatta",
+    "mrp": 6649,
+    "current_price": 1680,
+    "type": "Fashion",
+    "image_link": "https://i.ibb.co/Rp6nLbMn/Screenshot-2026-03-18-082502.png",
+    "product_link": "https://myntr.in/H2KUHR"
+  },
+  {
+    "name": "HOPPUP AirDoze Fusion Earbuds",
+    "mrp": 4999,
+    "current_price": 599,
+    "type": "Gadget",
+    "image_link": "https://i.ibb.co/B5wz01Ph/Screenshot-2026-03-18-082528.png",
+    "product_link": "https://amzn.to/41fXP08"
+  },
+  {
+    "name": "Women Cotton Leggings with Elasticated Waist",
+    "mrp": 399,
+    "current_price": 84,
+    "type": "Fashion",
+    "image_link": "https://i.ibb.co/tTX76j01/Screenshot-2026-03-18-082557.png",
+    "product_link": "https://ajiio.co/AMHbU6?"
   }
 ]
