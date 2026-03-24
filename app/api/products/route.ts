@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
-import { getSupabase } from "@/lib/supabase";
+import pool from "@/lib/db";
 
 export async function GET() {
-  const { data, error } = await getSupabase()
-    .from("products")
-    .select("*")
-    .order("id");
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json(data);
+  try {
+    const { rows } = await pool.query("SELECT * FROM products ORDER BY id");
+    return NextResponse.json(rows);
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : "Unknown error";
+    return NextResponse.json({ error: msg }, { status: 500 });
+  }
 }

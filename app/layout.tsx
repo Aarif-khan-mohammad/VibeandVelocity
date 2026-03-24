@@ -3,14 +3,12 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
-const BASE = process.env.NODE_ENV === "production" ? "/VibeandVelocity" : "";
-
 export const metadata: Metadata = {
   title: "Vibe & Velocity — Budget Deals ₹500–₹1000",
   description: "Discover the best budget products under ₹1000. Curated deals on mobiles, fashion, electronics & more.",
   icons: {
-    icon: BASE + "/logo.png",
-    apple: BASE + "/logo.png",
+    icon: "/logo.png",
+    apple: "/logo.png",
   },
 };
 
