@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
     .from("clicks")
     .select("count")
     .eq("product_name", name)
-    .single();
+    .single() as { data: { count: number } | null };
 
   return NextResponse.json({ count: data?.count ?? 0 });
 }
@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
     .from("clicks")
     .select("count")
     .eq("product_name", name)
-    .single();
+    .single() as { data: { count: number } | null };
 
   const newCount = (existing?.count ?? 0) + 1;
 
