@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 
@@ -14,6 +15,9 @@ interface Product {
 
 export default function ProductCard({ product }: { product: Product }) {
   const discount = Math.round(((product.mrp - product.price) / product.mrp) * 100);
+  const [clicks, setClicks] = useState(0);
+
+  const handleBuy = () => setClicks((c) => c + 1);
 
   return (
     <motion.div
@@ -77,9 +81,20 @@ export default function ProductCard({ product }: { product: Product }) {
         </div>
 
         {/* Price row — fixed height */}
-        <div className="flex items-center gap-1.5" style={{ height: 28 }}>
-          <span className="text-white font-bold text-sm sm:text-base">₹{product.price}</span>
-          <span className="text-gray-400 text-xs line-through">₹{product.mrp}</span>
+        <div className="flex items-center justify-between" style={{ height: 28 }}>
+          <div className="flex items-center gap-1.5">
+            <span className="text-white font-bold text-sm sm:text-base">₹{product.price}</span>
+            <span className="text-gray-400 text-xs line-through">₹{product.mrp}</span>
+          </div>
+          {clicks > 0 && (
+            <span
+              className="text-xs font-semibold px-1.5 py-0.5 rounded-full"
+              style={{ background: "rgba(0,212,255,0.15)", color: "#00d4ff", border: "1px solid rgba(0,212,255,0.3)" }}
+              title="Buy clicks"
+            >
+              🛒 {clicks}
+            </span>
+          )}
         </div>
 
         {/* Buy Now — always at bottom */}
@@ -87,6 +102,7 @@ export default function ProductCard({ product }: { product: Product }) {
           href={product.link}
           target="_blank"
           rel="noopener noreferrer sponsored"
+          onClick={handleBuy}
           className="buy-btn text-center text-white text-xs sm:text-sm font-bold py-2 rounded-xl transition-all duration-300 mt-auto"
           style={{ background: "linear-gradient(135deg, #8a2be2, #00d4ff)" }}
         >
