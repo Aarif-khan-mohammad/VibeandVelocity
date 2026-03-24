@@ -100,7 +100,9 @@ export default function Home() {
   const [perPage, setPerPage] = useState(() => 12);
 
   useEffect(() => {
-    fetch("/api/products").then((r) => r.json()).then(setProducts);
+    fetch("/api/products")
+      .then((r) => r.json())
+      .then((d) => { if (Array.isArray(d)) setProducts(d); });
   }, []);
 
   useEffect(() => {
