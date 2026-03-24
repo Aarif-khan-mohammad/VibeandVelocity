@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 
@@ -17,7 +17,21 @@ export default function ProductCard({ product }: { product: Product }) {
   const discount = Math.round(((product.mrp - product.price) / product.mrp) * 100);
   const [clicks, setClicks] = useState(0);
 
-  const handleBuy = () => setClicks((c) => c + 1);
+  useEffect(() => {
+    fetch(`/api/clicks?name=${encodeURIComponent(product.name)}`)
+      .then((r) => r.json())
+      .then((d) => setClicks(d.count));
+  }, [product.name]);
+
+  const handleBuy = () => {
+    fetch("/api/clicks", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: product.name }),
+    })
+      .then((r) => r.json())
+      .then((d) => setClicks(d.count));
+  };
 
   return (
     <motion.div

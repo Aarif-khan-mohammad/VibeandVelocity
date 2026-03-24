@@ -5,18 +5,16 @@ import { motion } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import SearchFilter, { SortOption } from "@/components/SearchFilter";
 import ProductCard from "@/components/ProductCard";
-import productsData from "@/data/products.json";
 
-const products = (productsData as unknown) as {
+type Product = {
+  id: number;
   name: string;
   mrp: number;
   price: number;
   category: string;
   image: string;
   link: string;
-}[];
-
-const categories = [...new Set(products.map((p) => p.category))];
+};
 
 function getPerPage() {
   if (typeof window === "undefined") return 12;
@@ -94,6 +92,7 @@ function Pagination({
 }
 
 export default function Home() {
+  const [products, setProducts] = useState<Product[]>([]);
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
   const [sort, setSort] = useState<SortOption>("default");
@@ -101,11 +100,17 @@ export default function Home() {
   const [perPage, setPerPage] = useState(() => 12);
 
   useEffect(() => {
+    fetch("/api/products").then((r) => r.json()).then(setProducts);
+  }, []);
+
+  useEffect(() => {
     const update = () => setPerPage(getPerPage());
     update();
     window.addEventListener("resize", update);
     return () => window.removeEventListener("resize", update);
   }, []);
+
+  const categories = useMemo(() => [...new Set(products.map((p) => p.category))], [products]);
 
   // Reset to page 1 on filter/sort change
   useEffect(() => { setPage(1); }, [search, activeCategory, sort, perPage]);
