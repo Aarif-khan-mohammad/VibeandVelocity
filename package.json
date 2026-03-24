@@ -5,8 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "export": "next build",
-    "start": "npx serve out"
+    "start": "next start"
   },
   "dependencies": {
     "@formspree/react": "^3.0.0",

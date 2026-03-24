@@ -125,7 +125,7 @@ export default function Home() {
     else if (sort === "high-low") list = [...list].sort((a, b) => b.price - a.price);
     else if (sort === "latest") list = [...list].reverse();
     return list;
-  }, [search, activeCategory, sort]);
+  }, [search, activeCategory, sort, products]);
 
   const totalPages = Math.ceil(filtered.length / perPage);
   const paginated = filtered.slice((page - 1) * perPage, page * perPage);
