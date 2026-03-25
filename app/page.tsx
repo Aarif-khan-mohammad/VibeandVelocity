@@ -2,7 +2,6 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { motion } from "framer-motion";
-import Navbar from "@/components/Navbar";
 import SearchFilter, { SortOption } from "@/components/SearchFilter";
 import ProductCard from "@/components/ProductCard";
 import { getSupabase } from "@/lib/supabase";
@@ -169,8 +168,6 @@ export default function Home() {
           }}
         />
       </div>
-
-      <Navbar />
 
       <main className="mx-auto px-4 pb-16" style={{ maxWidth: 1400, paddingTop: 100 }}>
         <div className="mb-10">

@@ -1,11 +1,12 @@
 /** @type {import('next').NextConfig} */
-const isProd = process.env.NODE_ENV === "production";
+// VERCEL_URL is set automatically by Vercel; GITHUB_ACTIONS is set by GitHub Actions
+const isGitHubPages = process.env.GITHUB_ACTIONS === "true";
 
 const nextConfig = {
-  output: "export",
+  ...(isGitHubPages && { output: "export" }),
   trailingSlash: true,
-  basePath: isProd ? "/VibeandVelocity" : "",
-  assetPrefix: isProd ? "/VibeandVelocity/" : "",
+  basePath: isGitHubPages ? "/VibeandVelocity" : "",
+  assetPrefix: isGitHubPages ? "/VibeandVelocity/" : "",
   images: { unoptimized: true },
 };
 
