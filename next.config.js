@@ -4,7 +4,7 @@ const isGitHubPages = process.env.GITHUB_ACTIONS === "true";
 
 const nextConfig = {
   ...(isGitHubPages && { output: "export" }),
-  trailingSlash: true,
+  ...(isGitHubPages && { trailingSlash: true }),
   basePath: isGitHubPages ? "/VibeandVelocity" : "",
   assetPrefix: isGitHubPages ? "/VibeandVelocity/" : "",
   images: { unoptimized: true },
