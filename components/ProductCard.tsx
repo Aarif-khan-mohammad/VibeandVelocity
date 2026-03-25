@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 
@@ -13,25 +12,18 @@ interface Product {
   link: string;
 }
 
-export default function ProductCard({ product }: { product: Product }) {
+export default function ProductCard({
+  product,
+  clicks,
+  onBuy,
+}: {
+  product: Product;
+  clicks: number;
+  onBuy: (name: string) => void;
+}) {
   const discount = Math.round(((product.mrp - product.price) / product.mrp) * 100);
-  const [clicks, setClicks] = useState(0);
 
-  useEffect(() => {
-    fetch(`/api/clicks?name=${encodeURIComponent(product.name)}`)
-      .then((r) => r.json())
-      .then((d) => setClicks(d.count));
-  }, [product.name]);
-
-  const handleBuy = () => {
-    fetch("/api/clicks", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: product.name }),
-    })
-      .then((r) => r.json())
-      .then((d) => setClicks(d.count));
-  };
+  const handleBuy = () => onBuy(product.name);
 
   return (
     <motion.div
@@ -55,7 +47,7 @@ export default function ProductCard({ product }: { product: Product }) {
         </span>
       )}
 
-      {/* Image — fixed height */}
+      {/* Image */}
       <div className="relative w-full flex-shrink-0 bg-white/5" style={{ height: 140 }}>
         <Image
           src={product.image}
@@ -70,9 +62,9 @@ export default function ProductCard({ product }: { product: Product }) {
         />
       </div>
 
-      {/* Info — fixed layout, no flex-1 growth on inner items */}
+      {/* Info */}
       <div className="flex flex-col p-2 sm:p-3 gap-1.5" style={{ flex: 1 }}>
-        {/* Category tag — fixed height */}
+        {/* Category tag */}
         <div style={{ height: 22 }}>
           <span
             className="text-xs font-semibold px-2 py-0.5 rounded-full"
@@ -87,14 +79,14 @@ export default function ProductCard({ product }: { product: Product }) {
           </span>
         </div>
 
-        {/* Name — fixed 2-line height */}
+        {/* Name */}
         <div style={{ height: 36 }}>
           <p className="text-white text-xs font-medium leading-snug line-clamp-2">
             {product.name}
           </p>
         </div>
 
-        {/* Price row — fixed height */}
+        {/* Price row + click count */}
         <div className="flex items-center justify-between" style={{ height: 28 }}>
           <div className="flex items-center gap-1.5">
             <span className="text-white font-bold text-sm sm:text-base">₹{product.price}</span>
@@ -103,7 +95,11 @@ export default function ProductCard({ product }: { product: Product }) {
           {clicks > 0 && (
             <span
               className="text-xs font-semibold px-1.5 py-0.5 rounded-full"
-              style={{ background: "rgba(0,212,255,0.15)", color: "#00d4ff", border: "1px solid rgba(0,212,255,0.3)" }}
+              style={{
+                background: "rgba(0,212,255,0.15)",
+                color: "#00d4ff",
+                border: "1px solid rgba(0,212,255,0.3)",
+              }}
               title="Buy clicks"
             >
               🛒 {clicks}
@@ -111,7 +107,7 @@ export default function ProductCard({ product }: { product: Product }) {
           )}
         </div>
 
-        {/* Buy Now — always at bottom */}
+        {/* Buy Now */}
         <a
           href={product.link}
           target="_blank"

@@ -5,16 +5,7 @@ import { motion } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import SearchFilter, { SortOption } from "@/components/SearchFilter";
 import ProductCard from "@/components/ProductCard";
-
-type Product = {
-  id: number;
-  name: string;
-  mrp: number;
-  price: number;
-  category: string;
-  image: string;
-  link: string;
-};
+import { getSupabase } from "@/lib/supabase";
 
 function getPerPage() {
   if (typeof window === "undefined") return 12;
@@ -91,8 +82,20 @@ function Pagination({
   );
 }
 
+type Product = {
+  id: number;
+  name: string;
+  mrp: number;
+  price: number;
+  category: string;
+  image: string;
+  link: string;
+};
+
 export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [clicks, setClicks] = useState<Record<string, number>>({});
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
   const [sort, setSort] = useState<SortOption>("default");
@@ -100,10 +103,33 @@ export default function Home() {
   const [perPage, setPerPage] = useState(() => 12);
 
   useEffect(() => {
-    fetch("/api/products")
-      .then((r) => r.json())
-      .then((d) => { if (Array.isArray(d)) setProducts(d); });
+    const supabase = getSupabase();
+    Promise.all([
+      supabase.from("products").select("*").order("id"),
+      supabase.from("clicks").select("product_name, count"),
+    ]).then(([{ data: products }, { data: clicksData }]) => {
+      if (products) setProducts(products);
+      if (clicksData) {
+        const map: Record<string, number> = {};
+        clicksData.forEach((r: { product_name: string; count: number }) => {
+          map[r.product_name] = r.count;
+        });
+        setClicks(map);
+      }
+      setLoading(false);
+    });
   }, []);
+
+  const handleBuyClick = async (productName: string) => {
+    setClicks((prev) => ({ ...prev, [productName]: (prev[productName] ?? 0) + 1 }));
+    const supabase = getSupabase();
+    const { data } = await supabase.from("clicks").select("count").eq("product_name", productName).single();
+    if (data) {
+      await supabase.from("clicks").update({ count: data.count + 1 }).eq("product_name", productName);
+    } else {
+      await supabase.from("clicks").insert({ product_name: productName, count: 1 });
+    }
+  };
 
   useEffect(() => {
     const update = () => setPerPage(getPerPage());
@@ -159,7 +185,15 @@ export default function Home() {
           />
         </div>
 
-        {filtered.length === 0 ? (
+        {loading ? (
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center text-gray-500 mt-20 text-lg"
+          >
+            Loading products...
+          </motion.p>
+        ) : filtered.length === 0 ? (
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -177,7 +211,7 @@ export default function Home() {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <ProductCard product={product} />
+                  <ProductCard product={product} clicks={clicks[product.name] ?? 0} onBuy={handleBuyClick} />
                 </motion.div>
               ))}
             </div>
