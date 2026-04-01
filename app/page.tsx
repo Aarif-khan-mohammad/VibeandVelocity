@@ -4,7 +4,6 @@ import { useState, useMemo, useEffect } from "react";
 import { motion } from "framer-motion";
 import SearchFilter, { SortOption } from "@/components/SearchFilter";
 import ProductCard from "@/components/ProductCard";
-import { getSupabase } from "@/lib/supabase";
 
 function getPerPage() {
   if (typeof window === "undefined") return 12;
@@ -102,13 +101,12 @@ export default function Home() {
   const [perPage, setPerPage] = useState(() => 12);
 
   useEffect(() => {
-    const supabase = getSupabase();
     Promise.all([
-      supabase.from("products").select("*").order("id"),
-      supabase.from("clicks").select("product_name, count"),
-    ]).then(([{ data: products }, { data: clicksData }]) => {
-      if (products) setProducts(products);
-      if (clicksData) {
+      fetch("/api/products").then((r) => r.json()),
+      fetch("/api/clicks/all").then((r) => r.json()),
+    ]).then(([productsData, clicksData]) => {
+      if (Array.isArray(productsData)) setProducts(productsData);
+      if (Array.isArray(clicksData)) {
         const map: Record<string, number> = {};
         clicksData.forEach((r: { product_name: string; count: number }) => {
           map[r.product_name] = r.count;
@@ -119,15 +117,13 @@ export default function Home() {
     });
   }, []);
 
-  const handleBuyClick = async (productName: string) => {
+  const handleBuyClick = (productName: string) => {
     setClicks((prev) => ({ ...prev, [productName]: (prev[productName] ?? 0) + 1 }));
-    const supabase = getSupabase();
-    const { data } = await supabase.from("clicks").select("count").eq("product_name", productName).single();
-    if (data) {
-      await supabase.from("clicks").update({ count: data.count + 1 }).eq("product_name", productName);
-    } else {
-      await supabase.from("clicks").insert({ product_name: productName, count: 1 });
-    }
+    fetch("/api/clicks", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: productName }),
+    });
   };
 
   useEffect(() => {
