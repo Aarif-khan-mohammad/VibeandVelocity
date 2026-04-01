@@ -1,35 +1,52 @@
 import { NextResponse } from "next/server";
-import pool from "@/lib/db";
+import { getSupabase } from "@/lib/supabase";
 
 export async function GET() {
   try {
-    // Top 10 products by clicks
-    const { rows: topProducts } = await pool.query(
-      `SELECT product_name, count FROM clicks ORDER BY count DESC LIMIT 10`
-    );
+    const sb = getSupabase();
 
-    // Monthly clicks — only months that have actual clicks
-    const { rows: monthly } = await pool.query(
-      `SELECT TO_CHAR(DATE_TRUNC('month', clicked_at), 'Mon YYYY') AS month,
-              SUM(count)::int AS total
-       FROM clicks
-       WHERE clicked_at IS NOT NULL
-       GROUP BY DATE_TRUNC('month', clicked_at)
-       HAVING SUM(count) > 0
-       ORDER BY DATE_TRUNC('month', clicked_at) ASC`
-    );
+    // Top 10 products by total clicks
+    const { data: allClicks } = await sb.from("clicks").select("product_name, count");
+    const rows = allClicks as { product_name: string; count: number }[] ?? [];
 
-    // Daily clicks — last 30 days, only days with clicks
-    const { rows: daily } = await pool.query(
-      `SELECT TO_CHAR(clicked_at, 'DD Mon') AS day,
-              SUM(count)::int AS total
-       FROM clicks
-       WHERE clicked_at >= CURRENT_DATE - INTERVAL '30 days'
-         AND clicked_at IS NOT NULL
-       GROUP BY clicked_at
-       HAVING SUM(count) > 0
-       ORDER BY clicked_at ASC`
-    );
+    const totals: Record<string, number> = {};
+    rows.forEach((r) => { totals[r.product_name] = (totals[r.product_name] ?? 0) + r.count; });
+    const topProducts = Object.entries(totals)
+      .map(([product_name, count]) => ({ product_name, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 10);
+
+    // Monthly clicks — only months with data
+    const monthMap: Record<string, number> = {};
+    const dailyMap: Record<string, number> = {};
+
+    const { data: clicksWithDate } = await sb.from("clicks").select("product_name, count, clicked_at");
+    const dated = clicksWithDate as { product_name: string; count: number; clicked_at: string }[] ?? [];
+
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    dated.forEach((r) => {
+      if (!r.clicked_at) return;
+      const d = new Date(r.clicked_at);
+
+      // Monthly
+      const monthKey = d.toLocaleDateString("en-GB", { month: "short", year: "numeric" });
+      monthMap[monthKey] = (monthMap[monthKey] ?? 0) + r.count;
+
+      // Daily (last 30 days)
+      if (d >= thirtyDaysAgo) {
+        const dayKey = d.toLocaleDateString("en-GB", { day: "2-digit", month: "short" });
+        dailyMap[dayKey] = (dailyMap[dayKey] ?? 0) + r.count;
+      }
+    });
+
+    const monthly = Object.entries(monthMap)
+      .map(([month, total]) => ({ month, total }));
+
+    const daily = Object.entries(dailyMap)
+      .map(([day, total]) => ({ day, total }))
+      .sort((a, b) => new Date(a.day).getTime() - new Date(b.day).getTime());
 
     return NextResponse.json({ topProducts, monthly, daily });
   } catch (e: unknown) {

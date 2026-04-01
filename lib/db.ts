@@ -1,6 +1,5 @@
 import { Pool } from "pg";
 
-// Serverless-safe: limit connections per function instance
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false },

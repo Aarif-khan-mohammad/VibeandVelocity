@@ -1,12 +1,7 @@
 import { NextResponse } from "next/server";
-import pool from "@/lib/db";
+import { getSupabase } from "@/lib/supabase";
 
 export async function GET() {
-  try {
-    const { rows } = await pool.query("SELECT product_name, count FROM clicks");
-    return NextResponse.json(rows);
-  } catch (e: unknown) {
-    const msg = e instanceof Error ? e.message : "Unknown error";
-    return NextResponse.json({ error: msg }, { status: 500 });
-  }
+  const { data } = await getSupabase().from("clicks").select("product_name, count");
+  return NextResponse.json(data ?? []);
 }

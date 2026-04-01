@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import pool from "@/lib/db";
+import { getSupabase } from "@/lib/supabase";
 import bcrypt from "bcryptjs";
 
 export async function POST(req: NextRequest) {
@@ -12,17 +12,21 @@ export async function POST(req: NextRequest) {
 
     const hashed = await bcrypt.hash(password, 10);
 
-    const { rows } = await pool.query(
-      `INSERT INTO users (name, email, phone, password, age, gender)
-       VALUES ($1, $2, $3, $4, $5, $6)
-       RETURNING id, name, email, phone, age, gender, role`,
-      [name, email || null, phone || null, hashed, age || null, gender || null]
-    );
+    const { data, error } = await getSupabase()
+      .from("users")
+      .insert({ name, email: email || null, phone: phone || null, password: hashed, age: age || null, gender: gender || null })
+      .select("id, name, email, phone, age, gender, role")
+      .single();
 
-    return NextResponse.json({ user: rows[0] });
+    if (error) {
+      if (error.message.includes("unique") || error.code === "23505")
+        return NextResponse.json({ error: "Email or phone already registered." }, { status: 409 });
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    return NextResponse.json({ user: data });
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : "Unknown error";
-    if (msg.includes("unique")) return NextResponse.json({ error: "Email or phone already registered." }, { status: 409 });
     return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
